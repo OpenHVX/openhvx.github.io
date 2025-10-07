@@ -33,13 +33,20 @@ jobs:
       - name: Build VitePress docs
         run: npm run docs:build
 
-      - name: Copy static root
-        run: cp -r index.html styles.css assets dist/
+      - name: Merge static root into VitePress dist
+        run: |
+          OUT=docs/.vitepress/dist
+          # s’assure que le dossier existe (VitePress le crée, mais au cas où)
+          mkdir -p "$OUT"
+          # copie le site statique racine dans la sortie VitePress
+          cp -r index.html assets "$OUT"/
+          # évite l’interférence Jekyll sur Pages
+          touch "$OUT"/.nojekyll
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: dist
+          path: docs/.vitepress/dist
 
   deploy:
     environment:
