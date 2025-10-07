@@ -1,0 +1,607 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <title>OpenHVX – Open-source IaaS for Hyper-V (Alternative to Azure Stack HCI / WAP)</title>
+  <meta name="description" content="OpenHVX is an open-source IaaS for Hyper-V — a lean, self-hosted alternative to Azure Stack HCI / Windows Azure Pack. Multi-tenant, API-first, agents and modern UI." />
+  <meta name="keywords" content="OpenHVX, Hyper-V IaaS, Azure Stack HCI alternative, Windows Azure Pack alternative, Hyper-V management, multi-tenant cloud, open-source IaaS, API-first, VyOS VPC, quotas, RBAC, TOTP, on-prem cloud" />
+  <meta name="robots" content="index,follow,max-snippet:-1,max-image-preview:large,max-video-preview:-1" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="content-language" content="en" />
+  <meta name="author" content="OpenHVX maintainers" />
+  <meta name="publisher" content="OpenHVX project" />
+  <meta name="copyright" content="Apache-2.0" />
+
+  <!-- Canonical / hreflang -->
+  <!-- TODO: remplace par ton domaine final -->
+  <link rel="canonical" href="https://openhvx.io/" />
+  <link rel="alternate" hreflang="en" href="https://openhvx.io/" />
+  <!-- Quand tu auras une page FR, ajoute : -->
+  <!-- <link rel="alternate" hreflang="fr" href="https://openhvx.io/fr/" /> -->
+  <!-- <link rel="alternate" hreflang="x-default" href="https://openhvx.io/" /> -->
+
+  <!-- Icons / PWA -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicon-180.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="theme-color" content="#001a2c" media="(prefers-color-scheme: dark)">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+
+  <!-- Performance hints -->
+  <link rel="preconnect" href="https://github.com" crossorigin>
+  <link rel="dns-prefetch" href="//github.com">
+  <link rel="preconnect" href="https://img.shields.io" crossorigin>
+  <link rel="dns-prefetch" href="//img.shields.io">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="OpenHVX" />
+  <meta property="og:title" content="OpenHVX — Open-source IaaS for Hyper-V (Azure Stack HCI / WAP alternative)" />
+  <meta property="og:description" content="Self-hosted, API-first IaaS for Hyper-V: tenants, quotas, agents, modern UI." />
+  <meta property="og:locale" content="en_US" />
+  <meta property="og:locale:alternate" content="fr_FR" />
+  <meta property="og:url" content="https://openhvx.io/" />
+  <!-- TODO: mets une image 1200×630 absolue -->
+  <meta property="og:image" content="https://openhvx.io/assets/logo.png" />
+  <meta property="og:image:secure_url" content="https://openhvx.io/assets/logo.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:type" content="image/png" />
+  <meta property="og:image:alt" content="OpenHVX — Open-source IaaS for Hyper-V" />
+  <meta property="og:see_also" content="https://github.com/openhvx" />
+  <meta property="og:see_also" content="https://github.com/orgs/openhvx/discussions" />
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <!-- TODO: renseigne ton handle si tu en as un -->
+  <meta name="twitter:site" content="@OpenHVX" />
+  <meta name="twitter:creator" content="@OpenHVX" />
+  <meta name="twitter:title" content="OpenHVX — Open-source IaaS for Hyper-V" />
+  <meta name="twitter:description" content="A lean, self-hosted alternative to Azure Stack HCI / WAP." />
+  <meta name="twitter:image" content="https://openhvx.io/assets/logo.png" />
+  <meta name="twitter:image:alt" content="OpenHVX — Open-source IaaS for Hyper-V" />
+
+  <!-- Sitemap (complète aussi robots.txt) -->
+  <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
+
+  <!-- Structured Data (JSON-LD) -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "name": "OpenHVX",
+        "url": "https://openhvx.io/",
+        "logo": "https://openhvx.io/assets/logo.png",
+        "sameAs": [
+          "https://github.com/openhvx",
+          "https://github.com/orgs/openhvx/discussions"
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "name": "OpenHVX",
+        "url": "https://openhvx.io/",
+        "potentialAction": {
+          "@type": "ReadAction",
+          "target": "https://openhvx.io/docs"
+        },
+        "inLanguage": "en"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "OpenHVX",
+        "applicationCategory": "Infrastructure as a Service",
+        "operatingSystem": "Windows Server (Hyper-V)",
+        "softwareRequirements": "Windows Server with Hyper-V; PowerShell; modern browser",
+        "isAccessibleForFree": true,
+        "offers": {
+          "@type": "Offer",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        "downloadUrl": "https://github.com/OpenHVX/openhvx-backend",
+        "publisher": {
+          "@type": "Organization",
+          "name": "OpenHVX"
+        },
+        "url": "https://openhvx.io/"
+      }
+    ]
+  }
+  </script>
+</head>
+
+<body>
+  <!-- Top Nav -->
+  <header class="nav">
+    <a class="brand" href="/">
+      <img src="/assets/logo.png" alt="OpenHVX logo" />
+    </a>
+    <nav class="nav-links">
+      <a href="https://github.com/openhvx" target="_blank" rel="noopener">GitHub</a>
+      <a href="/docs">Docs</a>
+      <a href="/ui">Demo</a>
+      <a class="btn small" href="https://github.com/orgs/openhvx/discussions" target="_blank" rel="noopener">Community</a>
+    </nav>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <h1>OpenHVX</h1>
+    <p class="lead">
+      The <strong>open-source IaaS</strong> for Hyper-V; a lightweight self-hosted alternative to Azure Stack HCI / Windows Azure Pack.
+      Clean API, agent-based automation, multi-tenant isolation, and a modern admin & tenant UI.
+    </p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/openhvx" target="_blank" rel="noopener">⭐ Star on GitHub</a>
+      <a class="btn ghost" href="/docs">Read the Docs</a>
+    </div>
+
+    <!-- Badges row -->
+    <div class="badges">
+      <a href="https://github.com/OpenHVX/openhvx-backend" target="_blank" rel="noopener">
+        <img alt="Backend Stars"
+             src="https://img.shields.io/github/stars/OpenHVX/openhvx-backend?label=Stars&logo=github&style=flat" />
+      </a>
+      <img alt="License" src="https://img.shields.io/badge/License-Apache_2.0-blue.svg" />
+      <img alt="CI" src="https://img.shields.io/badge/CI-GitHub_Actions-informational.svg" />
+      <img alt="Made with love" src="https://img.shields.io/badge/Made%20with-❤️-ff69b4.svg" />
+    </div>
+  </section>
+
+  <!-- Value props -->
+  <section class="features">
+    <div class="grid">
+      <article>
+        <h3>API-first</h3>
+        <p>Clean REST API with predictable schemas. Everything you can do in the UI is available via API.</p>
+        <code>GET /api/v1/admin/tenants/:id/resources</code>
+      </article>
+      <article>
+        <h3>Agent-driven</h3>
+        <p>Hyper-V agent in Go/PowerShell: inventory, tasks, metrics, lifecycle.</p>
+      </article>
+      <article>
+        <h3>Multi-tenant isolation</h3>
+        <p>Tenants, quotas, and per-tenant resources by design. Future SDN/VPC integration (VyOS).</p>
+      </article>
+      <article>
+        <h3>Production-ready patterns</h3>
+        <p>JWT auth, rate-limits, WAF/Traefik friendly, auditable actions, safe defaults.</p>
+      </article>
+      <article>
+        <h3>Simple hosting</h3>
+        <p>Runs on-prem. Start small on a single host, scale to multiple sites.</p>
+      </article>
+      <article>
+        <h3>Open governance</h3>
+        <p>Transparent roadmap & discussions. Contributions welcome.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- Comparison: OpenHVX vs Azure Stack HCI / WAP -->
+  <section class="compare">
+    <h2>Why OpenHVX vs Azure Stack HCI / WAP?</h2>
+    <p class="muted center">Same Hyper-V foundations — different philosophy: open, light, scalable, API-first, and community-driven.</p>
+
+    <div class="cmp-wrap">
+      <table class="cmp-table" aria-describedby="cmp-note">
+        <thead>
+          <tr>
+            <th>Capability</th>
+            <th>OpenHVX</th>
+            <th>Azure Stack HCI / WAP</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Licensing & cost</td>
+            <td class="yes">Open-source (Apache-2.0), self-hosted</td>
+            <td class="maybe">Commercial licensing</td>
+          </tr>
+          <tr>
+            <td>Multi-tenancy</td>
+            <td class="yes">Native tenants, quotas, RBAC</td>
+            <td class="maybe">Primarily single-tenant / per-workspace</td>
+          </tr>
+          <tr>
+            <td>Extensibility</td>
+            <td class="yes">Clean REST API + agents</td>
+            <td class="maybe">Integrations via vendor tooling</td>
+          </tr>
+          <tr>
+            <td>Networking / VPC</td>
+            <td class="yes">VPCs via VyOS (RESTCONF / API)</td>
+            <td class="maybe">Vendor-provided SDN stack</td>
+          </tr>
+          <tr>
+            <td>Data locality</td>
+            <td class="yes">On-prem by default</td>
+            <td class="maybe">Hybrid by design</td>
+          </tr>
+        </tbody>
+      </table>
+      <p id="cmp-note" class="muted tiny">
+        OpenHVX is not affiliated with Microsoft. Azure Stack HCI and Windows Azure Pack are trademarks of Microsoft. Names are used for comparison only.
+      </p>
+    </div>
+  </section>
+
+  <!-- Architecture glance -->
+  <section class="arch">
+    <h2>High-level architecture</h2>
+    <p class="muted">Controller & API Gateway · Agent on Hyper-V · MongoDB · RabbitMQ · UI (Tenant/Admin)</p>
+
+    <figure class="arch-card">
+      <picture>
+        <source media="(prefers-color-scheme: light)" srcset="assets/schema.openhvx.light.png">
+        <img
+          class="arch-img"
+          src="/assets/schema.openvhx.dark.png"
+          alt="OpenHVX high-level architecture diagram"
+          loading="lazy"
+          decoding="async"
+        />
+      </picture>
+    </figure>
+
+    <div class="cta center">
+      <a class="btn" href="/docs">Explore the Docs</a>
+      <a class="btn ghost" href="https://github.com/openhvx" target="_blank" rel="noopener">Browse Repos</a>
+    </div>
+  </section>
+
+  <!-- Roadmap (timeline) -->
+  <section id="roadmap" class="timeline">
+    <div class="tl-head">
+      <h2>Roadmap</h2>
+      <p class="muted">High-level milestones — subject to change.</p>
+      <div class="tl-legend" aria-label="Legend">
+        <span class="t-badge done">Done</span>
+        <span class="t-badge in-progress">In progress</span>
+        <span class="t-badge planned">Planned</span>
+      </div>
+    </div>
+
+    <ol class="tl-list">
+      <li class="tl-item done">
+        <span class="tl-dot" aria-hidden="true"></span>
+        <time class="tl-time">Q4 2025</time>
+        <h3 class="tl-title">Core Backend · MVP</h3>
+        <div class="tl-body">
+          <p class="tl-desc">Platform admin, Tenants, inventory merge (FULL/LIGHT), task enqueueing, stable API contracts.</p>
+        </div>
+        <div class="tl-foot"></div>
+      </li>
+
+      <li class="tl-item in-progress">
+        <span class="tl-dot" aria-hidden="true"></span>
+        <time class="tl-time">Q1 2026</time>
+        <h3 class="tl-title">Quota System</h3>
+        <div class="tl-body">
+          <p class="tl-desc">Per-tenant limits (VMs, vCPU, RAM, storage, networks) with hard/soft enforcement & APIs.</p>
+        </div>
+        <div class="tl-foot"></div>
+      </li>
+
+      <li class="tl-item in-progress">
+        <span class="tl-dot" aria-hidden="true"></span>
+        <time class="tl-time">Q2 2026</time>
+        <h3 class="tl-title">RBAC · Fine Tuning</h3>
+        <div class="tl-body">
+          <p class="tl-desc">Scopes (platform/tenant) · roles (global-admin, tenant-admin/operator/viewer) · fine-grained permissions.</p>
+        </div>
+        <div class="tl-foot"></div>
+      </li>
+
+      <li class="tl-item planned">
+        <span class="tl-dot" aria-hidden="true"></span>
+        <time class="tl-time">Q1 2026</time>
+        <h3 class="tl-title">Security · TOTP (Platform)</h3>
+        <div class="tl-body">
+          <p class="tl-desc">TOTP/2FA for platform admins (global-admin): enrollment, backup codes, policy enforcement.</p>
+        </div>
+        <div class="tl-foot"></div>
+      </li>
+
+      <li class="tl-item planned">
+        <span class="tl-dot" aria-hidden="true"></span>
+        <time class="tl-time">Q2 2026</time>
+        <h3 class="tl-title">Networking · VPC Orchestrator</h3>
+        <div class="tl-body">
+          <p class="tl-desc">VyOS via RESTCONF/VyOS API — tenant VPCs, subnets, NAT, routing, policy isolation.</p>
+        </div>
+        <div class="tl-foot"></div>
+      </li>
+    </ol>
+  </section>
+
+  <!-- Callout -->
+  <section class="callout">
+    <h2>Built by practitioners, for practitioners.</h2>
+    <p>OpenHVX is made by SREs and system/network administrators who run real infrastructures.
+      No vendor lock-in. No black boxes. Just solid building blocks.</p>
+    <div class="cta">
+      <a class="btn primary" href="https://github.com/orgs/openhvx/discussions" target="_blank" rel="noopener">Join the Community</a>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <div class="col">
+      <strong>OpenHVX</strong><br>
+      Open-source IaaS for Hyper-V
+    </div>
+    <div class="col">
+      <a href="/docs">Docs</a>
+      <a href="https://github.com/openhvx">GitHub</a>
+      <a href="https://github.com/orgs/openhvx/discussions">Community</a>
+    </div>
+    <div class="col">
+      <span>© <span id="y"></span> OpenHVX. Apache-2.0.</span>
+    </div>
+  </footer>
+
+  <script>
+    document.getElementById('y').textContent = new Date().getFullYear();
+  </script>
+
+  <style>
+    :root {
+      --brand: #06d6a0;
+      --brand-dark: #001a2c;
+      --brand-light: #22c4b8;
+
+      --bg: var(--brand-dark);
+      --bg-elev: #0b2236;
+      --text: #e6e8ec;
+      --muted: #a6adbb;
+      --border: #1e2430;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+
+      --ok: var(--brand);
+      --maybe: #cbd5e1;
+      --bad: #ef4444;
+    }
+
+    @media (prefers-color-scheme: light) {
+      :root {
+        --bg: #ffffff;
+        --bg-elev: #f8fafc;
+        --text: #0f172a;
+        --muted: #475569;
+        --border: #e2e8f0;
+        --shadow: 0 10px 30px rgba(2,6,23,.08);
+        --maybe: #475569;
+        --bad: #b91c1c;
+      }
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font: 16px/1.6 ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Inter, "Helvetica Neue", Arial, "Apple Color Emoji","Segoe UI Emoji";
+      color: var(--text);
+      background:
+        radial-gradient(1200px 600px at 70% -20%, rgba(6,214,160,.12), transparent 60%),
+        var(--bg);
+    }
+
+    /* Nav */
+    .nav {
+      max-width: 1100px; margin: 0 auto; padding: 18px 20px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav .brand { display: flex; align-items: center; text-decoration: none; }
+    .nav .brand img { height: 60px; width: auto; }
+    .nav-links { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .nav a { color: var(--muted); text-decoration: none; }
+    .nav a:hover { color: var(--text); }
+
+    /* Hero */
+    .hero {
+      max-width: 1100px; margin: 40px auto 0; padding: 40px 20px 0; text-align: center;
+    }
+    .alt-badge{
+      display:inline-block; padding:6px 10px; border-radius:999px;
+      border:1px solid var(--border);
+      background: rgba(6,214,160,.10);
+      color: #9be8cf; font-size: 13px;
+    }
+    .hero h1 { font-size: clamp(40px, 8vw, 68px); margin: 12px 0 10px; }
+    .lead { max-width: 860px; margin: 0 auto; font-size: 18px; color: var(--muted); }
+    .cta { margin: 24px 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 10px 16px; border-radius: 12px; border: 1px solid var(--border);
+      background: var(--bg-elev); color: var(--text);
+      text-decoration: none; box-shadow: var(--shadow);
+      font-weight: 500;
+    }
+    .btn.small { padding: 8px 12px; border-radius: 10px; }
+    .btn.primary {
+      background: linear-gradient(135deg, var(--brand), var(--brand-light));
+      color: var(--brand-dark); font-weight: 700; border: none;
+    }
+    .btn.ghost { background: transparent; }
+    .btn:hover { transform: translateY(-1px); }
+
+    .badges { display: flex; gap: 10px; justify-content: center; margin: 18px 0 0; opacity: .95; flex-wrap: wrap; }
+    .badges img { height: 20px; }
+
+    /* Features */
+    .features { max-width: 1100px; margin: 60px auto; padding: 0 20px; }
+    .features .grid {
+      display: grid;
+      gap: 20px;
+      grid-template-columns: repeat(3, 1fr);
+      align-items: stretch;
+    }
+    @media (max-width: 900px) {
+      .features .grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 600px) {
+      .features .grid { grid-template-columns: 1fr; }
+    }
+    .features article {
+      background: var(--bg-elev); border: 1px solid var(--border);
+      border-radius: 16px; padding: 18px; box-shadow: var(--shadow);
+      display: flex; flex-direction: column; justify-content: space-between;
+    }
+    .features h3 { margin: 0 0 6px; font-size: 18px; }
+    .features code { font-size: 13px; opacity: .9; }
+
+    /* Comparison */
+    .compare { max-width: 1100px; margin: 50px auto 0; padding: 0 20px; }
+    .compare h2 { text-align:center; margin-bottom: 6px; font-size: 28px; }
+    .compare .center { text-align:center; }
+    .compare .cmp-wrap{
+      margin-top: 14px;
+      background: var(--bg-elev);
+      border:1px solid var(--border);
+      border-radius: 14px; box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+    .cmp-table{ width:100%; border-collapse:separate; border-spacing:0; }
+    .cmp-table thead th{
+      text-align:left; font-weight:600; padding:12px 14px; font-size:14px;
+      background: rgba(255,255,255,.03);
+      border-bottom:1px solid var(--border);
+    }
+    .cmp-table tbody td{
+      padding:12px 14px; font-size:14px; border-top:1px solid rgba(255,255,255,.04);
+    }
+    .cmp-table tbody tr:nth-child(odd) td{ background: rgba(255,255,255,.02); }
+    .cmp-table td:nth-child(2){ width:38%; }
+    .cmp-table td:nth-child(3){ width:38%; }
+
+    .yes{ color: var(--ok); }
+    .maybe{ color: var(--maybe); }
+    .no{ color: var(--bad); }
+    .tiny{ font-size:12px; margin: 10px 12px 14px; }
+
+    @media (max-width: 720px){
+      .cmp-table thead{ display:none; }
+      .cmp-table, .cmp-table tbody, .cmp-table tr, .cmp-table td{ display:block; width:100%; }
+      .cmp-table tbody tr{ border-top:1px solid var(--border); }
+      .cmp-table tbody td{ border:none; }
+      .cmp-table tbody td::before{
+        content: attr(data-label);
+        display:block; font-weight:600; color:var(--muted); margin-bottom:2px;
+      }
+    }
+
+    /* Architecture */
+    .arch { max-width: 1100px; margin: 60px auto; padding: 0 20px; text-align: center; }
+    .arch h2 { font-size: 28px; margin-bottom: 6px; }
+    .muted { color: var(--muted); }
+    .arch-card {
+      margin: 18px auto 0; max-width: 980px; background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 14px; overflow: hidden; box-shadow: var(--shadow);
+    }
+    .arch-img { display: block; width: 100%; height: auto; }
+
+    /* Roadmap (timeline) — tes règles existantes + états colorés (garde tel quel) */
+    .timeline { max-width: 1100px; margin: 60px auto; padding: 0 20px; }
+    .timeline .tl-head { text-align: center; margin-bottom: 22px; }
+    .timeline h2 { font-size: 28px; margin: 0 0 6px; }
+    .timeline .tl-legend { display: inline-flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
+
+    .t-badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      padding: 4px 10px; border-radius: 999px;
+      font-size: 12px; border: 1px solid var(--border);
+      background: var(--bg-elev); color: var(--text);
+    }
+
+    .tl-list {
+      position: relative; display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 24px; margin: 0; padding: 28px 0 0; list-style: none; justify-content: center;
+    }
+    .tl-list::before {
+      content: ""; position: absolute; left: 0; right: 0; top: 16px;
+      height: 2px; background: var(--border); opacity: .9; pointer-events: none; z-index: 1;
+    }
+
+    .tl-item {
+      position: relative; background: var(--bg-elev);
+      border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 14px;
+      display: grid; grid-template-rows: auto auto 1fr auto; gap: 8px; text-align: center;
+      width: 100%; max-width: 240px; justify-self: center; min-height: 220px;
+    }
+    .tl-time { font-size: 12px; color: var(--muted); margin: 0; }
+    .tl-title { margin: 0; font-size: 16px; }
+    .tl-body { display: flex; align-items: center; justify-content: center; text-align: center; padding: 2px 4px; }
+    .tl-desc { margin: 0; color: var(--muted); font-size: 14px; }
+    .tl-foot { display: flex; justify-content: center; margin-top: 2px; }
+    .tl-foot .btn.small { line-height: 1; }
+
+    /* Bullets + états (visuels forts) */
+    :root{ --state-done:#06d6a0; --state-progress:#22c4b8; --state-planned:#7b8da6; }
+    .tl-item .tl-dot{
+      position:absolute; top:-16px; left:50%; width:16px; height:16px; border-radius:50%;
+      border:2px solid var(--brand); background:var(--bg); transform:translateX(-50%);
+      box-shadow:0 0 0 3px var(--bg); z-index:2;
+    }
+    .tl-item.done .tl-dot{ background:var(--state-done); border-color:var(--state-done); }
+    .tl-item.done .tl-dot::after{
+      content:""; position:absolute; left:50%; top:50%;
+      width:7px; height:4px; border-left:2px solid var(--brand-dark); border-bottom:2px solid var(--brand-dark);
+      transform:translate(-50%,-60%) rotate(-45deg); border-radius:1px;
+    }
+    .tl-item.in-progress .tl-dot{ background:var(--state-progress); border-color:var(--state-progress); }
+    .tl-item.in-progress .tl-dot::after{
+      content:""; position:absolute; left:50%; top:50%; width:16px; height:16px; border-radius:50%;
+      transform:translate(-50%,-50%); background:radial-gradient(rgba(34,196,184,.45), transparent 60%);
+      animation:tl-pulse 1.6s ease-out infinite; pointer-events:none; z-index:-1;
+    }
+    @keyframes tl-pulse{ 0%{transform:translate(-50%,-50%) scale(.7);opacity:.8;} 100%{transform:translate(-50%,-50%) scale(2.2);opacity:0;} }
+    .tl-item.planned .tl-dot{ background:var(--bg); border-color:var(--state-planned); }
+    .tl-item.planned .tl-dot::after{
+      content:""; position:absolute; left:50%; top:50%; width:8px; height:8px; border-radius:50%;
+      transform:translate(-50%,-50%); background:var(--bg); box-shadow: inset 0 0 0 2px var(--state-planned);
+    }
+    .t-badge.done::before,.t-badge.in-progress::before,.t-badge.planned::before{
+      content:""; display:inline-block; margin-right:6px; width:10px; height:10px; border-radius:50%; vertical-align:-1px;
+    }
+    .t-badge.done::before{ background:var(--state-done); }
+    .t-badge.in-progress::before{ background:var(--state-progress); box-shadow:0 0 0 3px rgba(34,196,184,.18); }
+    .t-badge.planned::before{ background:var(--bg); box-shadow: inset 0 0 0 2px var(--state-planned); }
+
+    @media (max-width: 900px) {
+      .tl-list { grid-template-columns: 1fr; gap: 16px; padding-top: 0; }
+      .tl-list::before { left: 16px; right: auto; top: 0; bottom: 0; width: 2px; height: auto; }
+      .tl-item { justify-self: stretch; max-width: none; text-align: left; padding-left: 42px; }
+      .tl-item .tl-dot { left: 16px; top: 16px; transform: none; box-shadow: 0 0 0 3px var(--bg); }
+      .tl-foot { justify-content: flex-start; }
+    }
+    @media (max-width: 520px) {
+      .tl-item { padding-left: 40px; min-height: 200px; }
+      .tl-title { font-size: 15px; }
+      .tl-desc { font-size: 13px; }
+    }
+
+    /* Callout */
+    .callout {
+      max-width: 980px; margin: 60px auto; padding: 26px 20px; text-align: center;
+      background: linear-gradient(135deg, rgba(6,214,160,.10), rgba(0,26,44,.80));
+      border: 1px solid var(--border); border-radius: 18px;
+    }
+
+    /* Footer */
+    .footer {
+      max-width: 1100px; margin: 60px auto 30px; padding: 0 20px;
+      display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
+      color: var(--muted);
+    }
+    .footer a { color: var(--muted); text-decoration: none; }
+    .footer a:hover { color: var(--text); }
+  </style>
+</body>
+</html>
