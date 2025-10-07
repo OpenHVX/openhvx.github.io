@@ -1,33 +1,32 @@
 import { defineConfig } from "vitepress";
 
-// https://vitepress.dev/reference/site-config
 export default defineConfig({
   lang: "en-US",
   title: "OpenHVX Docs",
   description:
     "Open-source IaaS for Hyper-V — multi-tenant, API-first, agent-based automation.",
 
-  base: "/docs/", // hébergé sous openhvx.org/docs
+  // Docs are served from /docs/ on the site
+  base: "/docs/",
+
+  // Build docs directly into ../dist/docs so GitHub Pages can serve both root and /docs/.
+  outDir: "../dist/docs",
 
   themeConfig: {
-    logo: "/assets/logo.svg",
+    logo: "/assets/logo.svg", // uses the root site's /assets (you copy it to dist/)
     siteTitle: "OpenHVX",
     outline: [2, 3],
     lastUpdated: true,
-    search: {
-      provider: "local",
-    },
+    search: { provider: "local" },
 
-    // --- Navbar ---
     nav: [
-      { text: "Home", link: "/" },
+      { text: "Home", link: "/" }, // goes to the landing page at site root
       { text: "Architecture", link: "/architecture" },
       { text: "API", link: "/api" },
       { text: "Agents", link: "/agents" },
       { text: "GitHub", link: "https://github.com/openhvx" },
     ],
 
-    // --- Sidebar ---
     sidebar: [
       {
         text: "Getting Started",
@@ -70,13 +69,11 @@ export default defineConfig({
       },
     ],
 
-    // --- Social Links ---
     socialLinks: [
       { icon: "github", link: "https://github.com/openhvx" },
       { icon: "twitter", link: "https://x.com/OpenHVX" },
     ],
 
-    // --- Footer ---
     footer: {
       message: "Released under the Apache-2.0 License.",
       copyright: "© 2025 OpenHVX. Built with ❤️ by the community.",
