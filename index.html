@@ -14,7 +14,6 @@
   <meta name="publisher" content="OpenHVX project" />
   <meta name="copyright" content="Apache-2.0" />
 
-
   <link rel="canonical" href="https://openhvx.org/" />
   <link rel="alternate" hreflang="en" href="https://openhvx.org/" />
 
@@ -39,7 +38,6 @@
   <meta property="og:locale" content="en_US" />
   <meta property="og:locale:alternate" content="fr_FR" />
   <meta property="og:url" content="https://openhvx.org/" />
-  <!-- TODO: mets une image 1200×630 absolue -->
   <meta property="og:image" content="https://openhvx.org/assets/logo.png" />
   <meta property="og:image:secure_url" content="https://openhvx.org/assets/logo.png" />
   <meta property="og:image:width" content="1200" />
@@ -51,7 +49,6 @@
 
   <!-- Twitter -->
   <meta name="twitter:card" content="summary_large_image" />
-  <!-- TODO: renseigne ton handle si tu en as un -->
   <meta name="twitter:site" content="@OpenHVX" />
   <meta name="twitter:creator" content="@OpenHVX" />
   <meta name="twitter:title" content="OpenHVX — Open-source IaaS for Hyper-V" />
@@ -59,56 +56,8 @@
   <meta name="twitter:image" content="https://openhvx.org/assets/logo.png" />
   <meta name="twitter:image:alt" content="OpenHVX — Open-source IaaS for Hyper-V" />
 
-  <!-- Sitemap (complète aussi robots.txt) -->
+  <!-- Sitemap -->
   <link rel="sitemap" type="application/xml" title="Sitemap" href="/sitemap.xml" />
-
-  <!-- Structured Data (JSON-LD) -->
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@graph": [
-      {
-        "@type": "Organization",
-        "name": "OpenHVX",
-        "url": "https://openhvx.org/",
-        "logo": "https://openhvx.org/assets/logo.png",
-        "sameAs": [
-          "https://github.com/openhvx",
-          "https://github.com/orgs/openhvx/discussions"
-        ]
-      },
-      {
-        "@type": "WebSite",
-        "name": "OpenHVX",
-        "url": "https://openhvx.org/",
-        "potentialAction": {
-          "@type": "ReadAction",
-          "target": "https://openhvx.org/docs"
-        },
-        "inLanguage": "en"
-      },
-      {
-        "@type": "SoftwareApplication",
-        "name": "OpenHVX",
-        "applicationCategory": "Infrastructure as a Service",
-        "operatingSystem": "Windows Server (Hyper-V)",
-        "softwareRequirements": "Windows Server with Hyper-V; PowerShell; modern browser",
-        "isAccessibleForFree": true,
-        "offers": {
-          "@type": "Offer",
-          "price": "0",
-          "priceCurrency": "USD"
-        },
-        "downloadUrl": "https://github.com/OpenHVX/openhvx-backend",
-        "publisher": {
-          "@type": "Organization",
-          "name": "OpenHVX"
-        },
-        "url": "https://openhvx.org/"
-      }
-    ]
-  }
-  </script>
 </head>
 
 <body>
@@ -233,10 +182,11 @@
 
     <figure class="arch-card">
       <picture>
-        <source media="(prefers-color-scheme: dark)" srcset="assets/schema.openhvx.dark.png">
+        <source media="(prefers-color-scheme: light)" srcset="/assets/schema.openhvx.light.png">
+        <source media="(prefers-color-scheme: dark)"  srcset="/assets/schema.openhvx.dark.png">
         <img
           class="arch-img"
-          src="/assets/schema.openvhx.dark.png"
+          src="/assets/schema.openhvx.dark.png"
           alt="OpenHVX high-level architecture diagram"
           loading="lazy"
           decoding="async"
@@ -340,16 +290,32 @@
     </div>
   </footer>
 
+  <!-- JS -->
   <script>
-    document.getElementById('y').textContent = new Date().getFullYear();
+  document.addEventListener('DOMContentLoaded', () => {
+    // dynamic year
+    const y = document.getElementById('y');
+    if (y) y.textContent = new Date().getFullYear();
+
+    // Auto-label comparison table for mobile cards
+    document.querySelectorAll('.cmp-table').forEach(table => {
+      const headers = Array.from(table.querySelectorAll('thead th')).map(th => th.textContent.trim());
+      table.querySelectorAll('tbody tr').forEach(tr => {
+        tr.querySelectorAll('td').forEach((td, i) => td.setAttribute('data-label', headers[i] || ''));
+      });
+    });
+  });
   </script>
 
+  <!-- CSS -->
   <style>
     :root {
+      /* Brand */
       --brand: #06d6a0;
       --brand-dark: #001a2c;
       --brand-light: #22c4b8;
 
+      /* Surfaces */
       --bg: var(--brand-dark);
       --bg-elev: #0b2236;
       --text: #e6e8ec;
@@ -357,9 +323,15 @@
       --border: #1e2430;
       --shadow: 0 10px 30px rgba(0,0,0,.35);
 
+      /* Status */
       --ok: var(--brand);
       --maybe: #cbd5e1;
       --bad: #ef4444;
+
+      /* Timeline states */
+      --state-done: #06d6a0;
+      --state-progress: #22c4b8;
+      --state-planned: #7b8da6;
     }
 
     @media (prefers-color-scheme: light) {
@@ -385,30 +357,34 @@
         var(--bg);
     }
 
-    /* Nav */
+    /* -------- Nav -------- */
     .nav {
       max-width: 1100px; margin: 0 auto; padding: 18px 20px;
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex; align-items: center; justify-content: space-between; gap: 12px;
     }
     .nav .brand { display: flex; align-items: center; text-decoration: none; }
     .nav .brand img { height: 60px; width: auto; }
-    .nav-links { display: flex; gap: 16px; align-items: center; flex-wrap: wrap; }
+    .nav-links { display: flex; gap: 12px; align-items: center; flex-wrap: wrap; }
     .nav a { color: var(--muted); text-decoration: none; }
     .nav a:hover { color: var(--text); }
+    .nav .btn.small { padding: 6px 10px; font-size: 14px; line-height: 1; }
+    @media (max-width: 640px){
+      .nav { flex-direction: column; align-items: center; }
+      .nav-links { justify-content: center; }
+    }
 
-    /* Hero */
+    /* -------- Hero -------- */
     .hero {
       max-width: 1100px; margin: 40px auto 0; padding: 40px 20px 0; text-align: center;
-    }
-    .alt-badge{
-      display:inline-block; padding:6px 10px; border-radius:999px;
-      border:1px solid var(--border);
-      background: rgba(6,214,160,.10);
-      color: #9be8cf; font-size: 13px;
     }
     .hero h1 { font-size: clamp(40px, 8vw, 68px); margin: 12px 0 10px; }
     .lead { max-width: 860px; margin: 0 auto; font-size: 18px; color: var(--muted); }
     .cta { margin: 24px 0; display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+    .hero .cta .btn { flex: 0 1 230px; justify-content: center; }
+    @media (max-width: 420px){
+      .hero .cta { flex-direction: column; }
+      .hero .cta .btn { width: 100%; }
+    }
 
     .btn {
       display: inline-flex; align-items: center; gap: 8px;
@@ -417,7 +393,6 @@
       text-decoration: none; box-shadow: var(--shadow);
       font-weight: 500;
     }
-    .btn.small { padding: 8px 12px; border-radius: 10px; }
     .btn.primary {
       background: linear-gradient(135deg, var(--brand), var(--brand-light));
       color: var(--brand-dark); font-weight: 700; border: none;
@@ -428,7 +403,7 @@
     .badges { display: flex; gap: 10px; justify-content: center; margin: 18px 0 0; opacity: .95; flex-wrap: wrap; }
     .badges img { height: 20px; }
 
-    /* Features */
+    /* -------- Features -------- */
     .features { max-width: 1100px; margin: 60px auto; padding: 0 20px; }
     .features .grid {
       display: grid;
@@ -436,12 +411,8 @@
       grid-template-columns: repeat(3, 1fr);
       align-items: stretch;
     }
-    @media (max-width: 900px) {
-      .features .grid { grid-template-columns: repeat(2, 1fr); }
-    }
-    @media (max-width: 600px) {
-      .features .grid { grid-template-columns: 1fr; }
-    }
+    @media (max-width: 900px) { .features .grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 600px) { .features .grid { grid-template-columns: 1fr; } }
     .features article {
       background: var(--bg-elev); border: 1px solid var(--border);
       border-radius: 16px; padding: 18px; box-shadow: var(--shadow);
@@ -450,16 +421,17 @@
     .features h3 { margin: 0 0 6px; font-size: 18px; }
     .features code { font-size: 13px; opacity: .9; }
 
-    /* Comparison */
+    /* -------- Comparison -------- */
     .compare { max-width: 1100px; margin: 50px auto 0; padding: 0 20px; }
     .compare h2 { text-align:center; margin-bottom: 6px; font-size: 28px; }
     .compare .center { text-align:center; }
-    .compare .cmp-wrap{
+    .cmp-wrap{
       margin-top: 14px;
       background: var(--bg-elev);
       border:1px solid var(--border);
       border-radius: 14px; box-shadow: var(--shadow);
       overflow: hidden;
+      overflow-x: auto; /* sécurité */
     }
     .cmp-table{ width:100%; border-collapse:separate; border-spacing:0; }
     .cmp-table thead th{
@@ -471,26 +443,40 @@
       padding:12px 14px; font-size:14px; border-top:1px solid rgba(255,255,255,.04);
     }
     .cmp-table tbody tr:nth-child(odd) td{ background: rgba(255,255,255,.02); }
-    .cmp-table td:nth-child(2){ width:38%; }
-    .cmp-table td:nth-child(3){ width:38%; }
-
-    .yes{ color: var(--ok); }
-    .maybe{ color: var(--maybe); }
-    .no{ color: var(--bad); }
+    .cmp-table td:nth-child(2), .cmp-table td:nth-child(3){ width:38%; }
+    .yes{ color: var(--ok); } .maybe{ color: var(--maybe); } .no{ color: var(--bad); }
     .tiny{ font-size:12px; margin: 10px 12px 14px; }
 
+    /* Mobile card layout for the table */
     @media (max-width: 720px){
       .cmp-table thead{ display:none; }
       .cmp-table, .cmp-table tbody, .cmp-table tr, .cmp-table td{ display:block; width:100%; }
-      .cmp-table tbody tr{ border-top:1px solid var(--border); }
-      .cmp-table tbody td{ border:none; }
+      .cmp-table tbody tr{
+        padding:12px 14px;
+        border-top:1px solid var(--border);
+        background: transparent;
+      }
+      .cmp-table tbody tr:nth-child(odd){
+        background: rgba(255,255,255,.02);
+        border-radius: 12px;
+      }
+      .cmp-table tbody td{
+        padding:8px 0;
+        display:flex; gap:10px; justify-content:space-between; align-items:baseline;
+      }
       .cmp-table tbody td::before{
         content: attr(data-label);
-        display:block; font-weight:600; color:var(--muted); margin-bottom:2px;
+        flex: 0 0 130px;
+        color: var(--muted);
+        font-weight:600;
       }
+      .cmp-table tbody td:first-child{
+        font-weight:700; font-size:15px; padding-top:0;
+      }
+      .cmp-table tbody td:first-child::before{ content:""; }
     }
 
-    /* Architecture */
+    /* -------- Architecture -------- */
     .arch { max-width: 1100px; margin: 60px auto; padding: 0 20px; text-align: center; }
     .arch h2 { font-size: 28px; margin-bottom: 6px; }
     .muted { color: var(--muted); }
@@ -500,19 +486,17 @@
     }
     .arch-img { display: block; width: 100%; height: auto; }
 
-    /* Roadmap (timeline) — tes règles existantes + états colorés (garde tel quel) */
+    /* -------- Timeline -------- */
     .timeline { max-width: 1100px; margin: 60px auto; padding: 0 20px; }
     .timeline .tl-head { text-align: center; margin-bottom: 22px; }
     .timeline h2 { font-size: 28px; margin: 0 0 6px; }
     .timeline .tl-legend { display: inline-flex; gap: 8px; flex-wrap: wrap; justify-content: center; margin-top: 6px; }
-
     .t-badge {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 4px 10px; border-radius: 999px;
       font-size: 12px; border: 1px solid var(--border);
       background: var(--bg-elev); color: var(--text);
     }
-
     .tl-list {
       position: relative; display: grid;
       grid-template-columns: repeat(5, 1fr);
@@ -522,7 +506,6 @@
       content: ""; position: absolute; left: 0; right: 0; top: 16px;
       height: 2px; background: var(--border); opacity: .9; pointer-events: none; z-index: 1;
     }
-
     .tl-item {
       position: relative; background: var(--bg-elev);
       border: 1px solid var(--border); border-radius: 14px; box-shadow: var(--shadow); padding: 14px;
@@ -536,8 +519,7 @@
     .tl-foot { display: flex; justify-content: center; margin-top: 2px; }
     .tl-foot .btn.small { line-height: 1; }
 
-    /* Bullets + états (visuels forts) */
-    :root{ --state-done:#06d6a0; --state-progress:#22c4b8; --state-planned:#7b8da6; }
+    /* Bullets + states */
     .tl-item .tl-dot{
       position:absolute; top:-16px; left:50%; width:16px; height:16px; border-radius:50%;
       border:2px solid var(--brand); background:var(--bg); transform:translateX(-50%);
@@ -581,14 +563,12 @@
       .tl-desc { font-size: 13px; }
     }
 
-    /* Callout */
+    /* -------- Callout & Footer -------- */
     .callout {
       max-width: 980px; margin: 60px auto; padding: 26px 20px; text-align: center;
       background: linear-gradient(135deg, rgba(6,214,160,.10), rgba(0,26,44,.80));
       border: 1px solid var(--border); border-radius: 18px;
     }
-
-    /* Footer */
     .footer {
       max-width: 1100px; margin: 60px auto 30px; padding: 0 20px;
       display: grid; gap: 10px; grid-template-columns: repeat(auto-fit, minmax(200px,1fr));
