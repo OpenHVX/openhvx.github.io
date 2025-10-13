@@ -8,7 +8,7 @@ This document describes the full end-to-end workflow for the `vm.create` task in
 
 A user (tenant or admin) sends a request to create a new virtual machine:
 
-```http
+```bash
 POST /api/v1/admin/tasks
 Content-Type: application/json
 Authorization: Bearer <JWT>
