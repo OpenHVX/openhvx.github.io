@@ -9,7 +9,7 @@ This document describes the full end-to-end workflow for the `vm.create` task in
 A user (tenant or admin) sends a request to create a new virtual machine:
 
 ```bash
-POST /api/v1/admin/tasks
+POST /api/v1/{scope:admin|tenant}/tasks
 Content-Type: application/json
 Authorization: Bearer <JWT>
 
@@ -37,7 +37,7 @@ Authorization: Bearer <JWT>
 ## 2. API Gateway → Controller
 
 ### Middleware & context setup
-- **accessMode middleware**: sets `req.isAdmin = true`.
+- **accessMode middleware**: sets `req.isAdmin = true|false`.
 - **Envelope validation**: ensures presence of `kind`, `refId`, and `target`.
 - **Schema pre-validation**: uses `src/lib/schemas/task.js` (per action, e.g. `vm.create`).
 - **Tenant context resolution**:
