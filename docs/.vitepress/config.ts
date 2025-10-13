@@ -6,21 +6,18 @@ export default defineConfig({
   description:
     "Open-source IaaS for Hyper-V — multi-tenant, API-first, agent-based automation.",
 
-  // Docs are served from /docs/ on the site
   base: "/docs/",
-
-  // Build docs directly into ../dist/docs so GitHub Pages can serve both root and /docs/.
   outDir: "../dist/docs",
 
   themeConfig: {
-    logo: "/assets/logo.svg", // uses the root site's /assets (you copy it to dist/)
+    logo: "/assets/logo.svg",
     siteTitle: "OpenHVX",
     outline: [2, 3],
     lastUpdated: true,
     search: { provider: "local" },
 
     nav: [
-      { text: "Home", link: "/" }, // goes to the landing page at site root
+      { text: "Home", link: "/" },
       { text: "Architecture", link: "/architecture" },
       { text: "API", link: "/api" },
       { text: "Agents", link: "/agents" },
@@ -32,6 +29,7 @@ export default defineConfig({
         text: "Getting Started",
         items: [
           { text: "Overview", link: "/index" },
+          { text: "Workflow Example", link: "/workflow-example" }, // 👈 ajouté ici
           { text: "Quick Start", link: "/getting-started" },
         ],
       },
