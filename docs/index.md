@@ -16,7 +16,8 @@ The architecture is divided into four functional layers:
 
 ### Architecture Diagram
 
-![Architecture Diagram Placeholder](/assets/schema.openhvx.dark.png)
+![Architecture Diagram (Light)](/assets/schema.openhvx.light.png){.vp-only-light}
+![Architecture Diagram (Dark)](/assets/schema.openhvx.dark.png){.vp-only-dark}
 
 - **Control Plane:** Includes the API Gateway, Authentication Service, Controller, Quota Service, WS-Broker (console tunneling), MongoDB, and RabbitMQ. It handles orchestration logic, workflows, multi-tenancy and quota enforcement.
 - **Data Plane:** Consists of lightweight PowerShell Agents running on Hyper-V hosts. Agents execute tasks, collect inventory, and stream console sessions.
