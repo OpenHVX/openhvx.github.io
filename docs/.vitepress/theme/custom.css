@@ -16,3 +16,11 @@
   --vp-c-text-1: #e6e8ec;
   --vp-c-text-2: #a6adbb;
 }
+
+/* Show light image by default */
+.only-light { display: block; }
+.only-dark  { display: none; }
+
+/* When VitePress is in dark mode */
+html.dark .only-light { display: none; }
+html.dark .only-dark  { display: block; }

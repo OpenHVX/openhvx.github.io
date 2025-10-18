@@ -17,15 +17,14 @@
 # 1) Clone
 git clone https://github.com/openhvx/openhvx-backend.git
 cd openhvx-backend
-Pour cette partie, comment on fait le lien?
 # 2) Env
 Create and fill env files (.env.auth, .env.controller, .env.gateway, .env.ws)
-All variables and examples are documented in [Environment variables](https://openhvx.org/docs/environment-variables.html).
-
 # 3) Run services
 docker compose up -d
 
 ```
+
+> **All variables and examples are documented in** [Environment variables](https://openhvx.org/docs/environment-variables.html).
 
 ---
 
