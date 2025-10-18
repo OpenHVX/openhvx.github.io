@@ -9,8 +9,6 @@
 - **Node.js 20+** and **npm**
 - **Go 1.21+** (to build Agent tools)
 
----
-
 ## Quick Start (Backend)
 
 ```bash
@@ -25,8 +23,6 @@ docker compose up -d
 ```
 
 > **All variables and examples are documented in** [Environment variables](https://openhvx.org/docs/environment-variables.html).
-
----
 
 ## Build Agent Tools (Windows helpers)
 
@@ -56,8 +52,6 @@ This will:
 2. Place the resulting binaries into `/src/powershell/bin`
 
 > If you build manually, ensure you build `src/` first, then the tools, then move outputs to `/src/powershell/bin`.
-
----
 
 ## Running the Agent (on a Hyper‑V host)
 
@@ -91,8 +85,6 @@ This will:
 # Example (adapt to your parameters)
 # .\openhvx-agent.exe
 ```
-
----
 
 ## Next Steps
 

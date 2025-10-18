@@ -1,5 +1,3 @@
-marche pas, y'a que le dark maintenant dans les 2 cas
-
 # Overview
 
 OpenHVX is an open-source orchestration platform for **multi-tenant Hyper-V infrastructures**. It provides a unified control plane to manage virtual machines, quotas, and networking across distributed hosts, built on a lightweight and modular design.
