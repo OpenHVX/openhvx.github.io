@@ -6,8 +6,6 @@ OpenHVX is an open-source orchestration platform for **multi-tenant Hyper-V infr
 > Expect rapid iteration and potential breaking changes between releases.
 > Community testing and contributions are highly encouraged!
 
----
-
 ## Architecture
 
 OpenHVX separates orchestration and execution into clear layers.
@@ -16,8 +14,10 @@ The architecture is divided into four functional layers:
 
 ### Architecture Diagram
 
-![Architecture Diagram (Light)](/assets/schema.openhvx.light.png){.vp-only-light}
-![Architecture Diagram (Dark)](/assets/schema.openhvx.dark.png){.vp-only-dark}
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="/assets/schema.openhvx.dark.png">
+  <img src="/assets/schema.openhvx.light.png" alt="OpenHVX Architecture Diagram" />
+</picture>
 
 - **Control Plane:** Includes the API Gateway, Authentication Service, Controller, Quota Service, WS-Broker (console tunneling), MongoDB, and RabbitMQ. It handles orchestration logic, workflows, multi-tenancy and quota enforcement.
 - **Data Plane:** Consists of lightweight PowerShell Agents running on Hyper-V hosts. Agents execute tasks, collect inventory, and stream console sessions.
