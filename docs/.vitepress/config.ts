@@ -18,7 +18,6 @@ export default defineConfig({
 
     nav: [
       { text: "Home", link: "/" },
-      { text: "Architecture", link: "/architecture" },
       { text: "API", link: "/api" },
       { text: "Agents", link: "/agents" },
       { text: "GitHub", link: "https://github.com/openhvx" },
@@ -29,17 +28,9 @@ export default defineConfig({
         text: "Getting Started",
         items: [
           { text: "Overview", link: "/index" },
-          { text: "Workflow Example", link: "/workflow-example" }, // 👈 ajouté ici
           { text: "Quick Start", link: "/getting-started" },
-        ],
-      },
-      {
-        text: "Architecture",
-        items: [
-          { text: "High-level Design", link: "/architecture" },
-          { text: "Control Plane", link: "/control-plane" },
-          { text: "Agent Lifecycle", link: "/agent-lifecycle" },
-          { text: "Inventory Merge Logic", link: "/inventory-merge" },
+          { text: "Workflow Example", link: "/workflow-example" },
+          { text: "Environment variables", link: "/environment-variables" },
         ],
       },
       {
@@ -48,14 +39,6 @@ export default defineConfig({
           { text: "Endpoints", link: "/api" },
           { text: "Schemas", link: "/schemas" },
           { text: "Errors", link: "/errors" },
-        ],
-      },
-      {
-        text: "Agents",
-        items: [
-          { text: "Overview", link: "/agents" },
-          { text: "Hyper-V Agent", link: "/agents/hyperv" },
-          { text: "Tasks & Inventory", link: "/agents/tasks" },
         ],
       },
       {
