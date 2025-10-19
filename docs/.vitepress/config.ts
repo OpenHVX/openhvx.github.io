@@ -1,4 +1,5 @@
 import { defineConfig } from "vitepress";
+import lightbox from "vitepress-plugin-lightbox";
 
 export default defineConfig({
   lang: "en-US",
@@ -7,8 +8,7 @@ export default defineConfig({
     "Open-source IaaS for Hyper-V — multi-tenant, API-first, agent-based automation.",
 
   base: "/docs/",
-  outDir: "../dist/docs",
-
+  outDir: "../dist/docs",  
   themeConfig: {
     logo: "/assets/logo.svg",
     siteTitle: "OpenHVX",
@@ -75,4 +75,15 @@ export default defineConfig({
     ],
     ["meta", { property: "og:image", content: "/assets/og-cover.png" }],
   ],
+
+    markdown: {
+    config: (md) => {
+      // Activer le plugin lightbox
+      md.use(lightbox, {
+        // Optionnel : config
+        selector: "img[data-zoomable]",
+        delay: 300,
+        scrollOffset: 50,
+      });
+    }
 });

@@ -13,8 +13,9 @@
     "serve": "vitepress serve docs"
   },
   "devDependencies": {
-    "vue": "3.2.44",
-    "vitepress": "1.0.0-alpha.28"
+    "vitepress": "1.0.0-alpha.28",
+    "vitepress-plugin-lightbox": "^1.0.3",
+    "vue": "3.2.44"
   },
   "pnpm": {
     "peerDependencyRules": {
