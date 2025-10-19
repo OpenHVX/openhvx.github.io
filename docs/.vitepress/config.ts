@@ -8,7 +8,7 @@ export default defineConfig({
     "Open-source IaaS for Hyper-V — multi-tenant, API-first, agent-based automation.",
 
   base: "/docs/",
-  outDir: "../dist/docs",  
+  outDir: "../dist/docs",
   themeConfig: {
     logo: "/assets/logo.svg",
     siteTitle: "OpenHVX",
@@ -75,8 +75,7 @@ export default defineConfig({
     ],
     ["meta", { property: "og:image", content: "/assets/og-cover.png" }],
   ],
-
-    markdown: {
+  markdown: {
     config: (md) => {
       // Activer le plugin lightbox
       md.use(lightbox, {
@@ -85,5 +84,6 @@ export default defineConfig({
         delay: 300,
         scrollOffset: 50,
       });
-    }
+    },
+  },
 });
