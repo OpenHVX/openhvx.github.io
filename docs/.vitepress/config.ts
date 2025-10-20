@@ -27,7 +27,7 @@ export default defineConfig({
       {
         text: "Getting Started",
         items: [
-          { text: "Overview", link: "/index" },
+          { text: "Overview", link: "/" },
           { text: "Quick Start", link: "/getting-started" },
           { text: "Workflow Example", link: "/workflow-example" },
           { text: "Environment variables", link: "/environment-variables" },
