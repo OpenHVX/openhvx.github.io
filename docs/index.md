@@ -6,8 +6,6 @@ OpenHVX is an open-source orchestration platform for **multi-tenant Hyper-V infr
 > Expect rapid iteration and potential breaking changes between releases.
 > Community testing and contributions are highly encouraged!
 
----
-
 ## Architecture
 
 OpenHVX separates orchestration and execution into clear layers.
@@ -53,8 +51,6 @@ The broker maintains secure, tenant-scoped channels, ensuring that only authenti
 This architecture provides near real-time console streaming, independent of the hypervisor’s native UI or RDP, and works even in fully headless environments.
 
 <img src="/assets/serial-console.png" alt="OpenHVX Serial Console" width="900" data-zoomable />
-
----
 
 ### 🤝 Contributing
 
