@@ -41,21 +41,13 @@ This initializes the **platform-wide administrator** via the Admin Auth API.
 >   - `upsert`: create if missing, or reset if exists (recommended for bootstrap)
 > - Replace `x-api-key` and credentials as needed.
 
-### Linux / macOS
+### Curl
 
 ```bash
 curl -k -X POST "https://admin-api.openhvx.local/api/v1/admin/auth/register?mode=upsert" \
   -H "content-type: application/json" \
   -H "x-api-key: example" \
   --data-binary '{"email":"admin@openhvx.local","password":"3x4mpl3"}'
-```
-
-### Windows PowerShell
-
-```powershell
-curl -k -Method POST "https://admin-api.openhvx.local/api/v1/admin/auth/register?mode=upsert" `
-  -Headers @{ "content-type" = "application/json"; "x-api-key" = "Fklzhrfolzhrihjzpo" } `
-  -Body '{ "email":"admin@openhvx.local", "password":"3x4mpl3" }'
 ```
 
 **Expected response (example):**
