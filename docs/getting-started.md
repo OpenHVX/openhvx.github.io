@@ -202,9 +202,3 @@ This will:
 # Example (adapt to your parameters)
 # .\openhvx-agent.exe
 ```
-
-## Next Steps
-
-- Read: **Overview → Architecture & Features**
-- Contribute: open issues/PRs on GitHub → https://github.com/openhvx
-- Roadmap & known limitations: _(coming soon)_
