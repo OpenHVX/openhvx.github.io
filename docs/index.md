@@ -6,6 +6,8 @@ OpenHVX is an open-source orchestration platform for **multi-tenant Hyper-V infr
 > Expect rapid iteration and potential breaking changes between releases.
 > Community testing and contributions are highly encouraged!
 
+---
+
 ## Architecture
 
 OpenHVX separates orchestration and execution into clear layers.
@@ -36,6 +38,25 @@ The design emphasizes **asynchronous communication**, **tenant isolation**, and 
 - **Agents:** Lightweight, host-based agents for secure orchestration and telemetry.
 - **Extensible:** Modular microservice architecture, event-driven.
 - **Modern UI:** Specific UI for tenant & admin scope.
+
+---
+
+## User Interface
+
+### Admin Dashboard
+
+The admin dashboard provides a global overview of tenants, resources, and running tasks.
+
+<img src="/assets/dashboard.png" alt="OpenHVX Admin Dashboard" width="900" data-zoomable />
+
+### Serial Console
+
+Each VM exposes a live serial console, **established as a tunnel** between the **client browser** and the **Agent**, with the **WebSocket Broker** acting as an intermediary relay.  
+The broker maintains secure, tenant-scoped channels, ensuring that only authenticated users can attach to their own virtual machines.
+
+This architecture provides near real-time console streaming, independent of the hypervisor’s native UI or RDP, and works even in fully headless environments.
+
+<img src="/assets/serial-console.png" alt="OpenHVX Serial Console" width="900" data-zoomable />
 
 ---
 
