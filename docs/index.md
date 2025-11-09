@@ -26,8 +26,6 @@ The architecture is divided into two functional layers:
 
 The design emphasizes **asynchronous communication**, **tenant isolation**, and **extensibility** through modular services.
 
----
-
 ## Features
 
 - **VM Lifecycle:** Create, edit, clone, and manage VMs with cloud-init and serial console access.
@@ -38,8 +36,6 @@ The design emphasizes **asynchronous communication**, **tenant isolation**, and 
 - **Agents:** Lightweight, host-based agents for secure orchestration and telemetry.
 - **Extensible:** Modular microservice architecture, event-driven.
 - **Modern UI:** Specific UI for tenant & admin scope.
-
----
 
 ## User Interface
 

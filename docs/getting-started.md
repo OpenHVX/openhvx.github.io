@@ -11,8 +11,6 @@
 - **Node.js 20+** and **npm**
 - **Go 1.21+** (to build Agent tools)
 
----
-
 ## Quick Start (Backend)
 
 ```bash
@@ -29,8 +27,6 @@ docker compose up -d
 ```
 
 > **All variables and examples are documented in** [Environment variables](https://openhvx.org/docs/environment-variables.html).
-
----
 
 ## Create a Global Admin (one-time bootstrap)
 
@@ -80,8 +76,6 @@ curl -k -Method POST "https://admin-api.openhvx.local/api/v1/admin/auth/register
 > - Avoid exposing the API key in your shell history: export it to a variable (`export ADMIN_REGISTER_KEY=...`) and use `-H "x-api-key: $ADMIN_REGISTER_KEY"`.
 > - Change the password and registration key in real environments.
 
----
-
 ## Build Agent Tools (Windows helpers)
 
 These binaries are required by the PowerShell Agent to create **cloud-init ISOs** and to bridge **serial consoles**.
@@ -110,8 +104,6 @@ This will:
 2. Place the resulting binaries into `/src/powershell/bin`
 
 > If you build manually, ensure you build `src/` first, then the tools, then move outputs to `/src/powershell/bin`.
-
----
 
 ## Running the Agent (on a Hyper-V host)
 
@@ -145,8 +137,6 @@ This will:
 # Example (adapt to your parameters)
 # .\openhvx-agent.exe
 ```
-
----
 
 ## Next Steps
 
