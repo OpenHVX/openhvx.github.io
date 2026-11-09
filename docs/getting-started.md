@@ -158,7 +158,7 @@ See [CLI](/cli) for command mapping and idempotent retries.
 
 ## Next steps
 
-- [Workflow example](/workflow-example) - end-to-end `vm.create`
+- [Task flow](/task-flow) - pipeline + `vm.create` walkthrough
 - [Architecture](/architecture) - service boundaries and console routing
 - [Task protocol](/task-protocol) - idempotency and recovery
 - [API](/api) - public routes

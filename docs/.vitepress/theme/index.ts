@@ -2,7 +2,6 @@ import DefaultTheme from "vitepress/theme";
 import "./custom.css";
 
 let mermaidReady = false;
-let lightboxBound = false;
 
 function ensureLightbox() {
   if (typeof document === "undefined") return;
@@ -14,7 +13,7 @@ function ensureLightbox() {
   overlay.hidden = true;
   overlay.innerHTML = `
     <div class="mermaid-lightbox__toolbar">
-      <span class="mermaid-lightbox__hint">Scroll to pan · Esc or click outside to close</span>
+      <span class="mermaid-lightbox__hint">Scroll to pan · Esc or Close to exit</span>
       <button type="button" class="mermaid-lightbox__close" aria-label="Close">Close</button>
     </div>
     <div class="mermaid-lightbox__stage"></div>
@@ -38,6 +37,43 @@ function ensureLightbox() {
   });
 }
 
+function readSvgSize(svg: SVGElement): { width: number; height: number } | null {
+  const viewBox = svg.getAttribute("viewBox");
+  if (viewBox) {
+    const parts = viewBox.trim().split(/[\s,]+/).map(Number);
+    if (parts.length === 4 && parts[2] > 0 && parts[3] > 0) {
+      return { width: parts[2], height: parts[3] };
+    }
+  }
+
+  try {
+    const box = svg.getBBox();
+    if (box.width > 0 && box.height > 0) {
+      return { width: box.width, height: box.height };
+    }
+  } catch {
+    // SVG not in DOM yet
+  }
+
+  return null;
+}
+
+/** Stop Mermaid from shrinking diagrams into the VitePress content column. */
+function lockSvgNaturalSize(svg: SVGElement) {
+  const size = readSvgSize(svg);
+  if (!size) return size;
+
+  const width = Math.ceil(size.width);
+  const height = Math.ceil(size.height);
+  svg.setAttribute("width", String(width));
+  svg.setAttribute("height", String(height));
+  svg.style.width = `${width}px`;
+  svg.style.height = `${height}px`;
+  svg.style.maxWidth = "none";
+  svg.removeAttribute("preserveAspectRatio");
+  return size;
+}
+
 function openLightbox(source: HTMLElement) {
   ensureLightbox();
   const overlay = document.getElementById("mermaid-lightbox")!;
@@ -47,11 +83,14 @@ function openLightbox(source: HTMLElement) {
 
   stage.innerHTML = "";
   const clone = svg.cloneNode(true) as SVGElement;
-  clone.removeAttribute("width");
-  clone.removeAttribute("height");
-  clone.style.width = "auto";
-  clone.style.height = "auto";
-  clone.style.maxWidth = "none";
+  const size = lockSvgNaturalSize(clone) ?? readSvgSize(svg);
+  if (size) {
+    // Fit width to the viewport when possible, keep aspect ratio, allow scroll if taller.
+    const maxWidth = Math.max(960, window.innerWidth - 64);
+    const scale = Math.min(1.35, maxWidth / size.width);
+    clone.style.width = `${Math.round(size.width * scale)}px`;
+    clone.style.height = `${Math.round(size.height * scale)}px`;
+  }
   stage.appendChild(clone);
 
   overlay.hidden = false;
@@ -59,6 +98,9 @@ function openLightbox(source: HTMLElement) {
 }
 
 function enhanceDiagram(node: HTMLElement) {
+  const svg = node.querySelector("svg");
+  if (svg) lockSvgNaturalSize(svg);
+
   if (node.dataset.lightboxReady === "1") return;
   node.dataset.lightboxReady = "1";
   node.classList.add("mermaid--zoomable");
@@ -79,7 +121,10 @@ function enhanceDiagram(node: HTMLElement) {
     node.appendChild(btn);
   }
 
-  node.addEventListener("click", () => openLightbox(node));
+  node.addEventListener("click", (event) => {
+    if ((event.target as HTMLElement).closest(".mermaid__expand")) return;
+    openLightbox(node);
+  });
   node.addEventListener("keydown", (event) => {
     if (event.key === "Enter" || event.key === " ") {
       event.preventDefault();
@@ -101,14 +146,16 @@ async function renderMermaid() {
       theme: document.documentElement.classList.contains("dark")
         ? "dark"
         : "neutral",
-      flowchart: { curve: "basis", useMaxWidth: false },
+      flowchart: { curve: "basis", useMaxWidth: false, htmlLabels: true },
       sequence: {
-        actorMargin: 28,
-        messageMargin: 40,
+        actorMargin: 36,
+        messageMargin: 48,
+        noteMargin: 12,
         mirrorActors: false,
         useMaxWidth: false,
-        width: 180,
-        height: 54,
+        width: 168,
+        height: 56,
+        boxMargin: 12,
       },
     });
     mermaidReady = true;
@@ -124,10 +171,6 @@ async function renderMermaid() {
   document
     .querySelectorAll<HTMLElement>(".mermaid[data-processed]")
     .forEach(enhanceDiagram);
-
-  if (!lightboxBound) {
-    lightboxBound = true;
-  }
 }
 
 export default {

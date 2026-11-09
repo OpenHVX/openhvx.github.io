@@ -30,7 +30,7 @@ export default defineConfig({
         items: [
           { text: "Overview", link: "/" },
           { text: "Quick Start", link: "/getting-started" },
-          { text: "Workflow Example", link: "/workflow-example" },
+          { text: "Task flow", link: "/task-flow" },
           { text: "Configuration", link: "/configuration" },
         ],
       },
