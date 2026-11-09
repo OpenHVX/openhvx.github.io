@@ -30,7 +30,6 @@ export default defineConfig({
         items: [
           { text: "Overview", link: "/" },
           { text: "Quick Start", link: "/getting-started" },
-          { text: "Task flow", link: "/task-flow" },
           { text: "Configuration", link: "/configuration" },
         ],
       },
@@ -39,6 +38,7 @@ export default defineConfig({
         items: [
           { text: "Control plane", link: "/architecture" },
           { text: "Task protocol", link: "/task-protocol" },
+          { text: "Task flow", link: "/task-flow" },
           { text: "Agents", link: "/agents" },
           { text: "CLI", link: "/cli" },
         ],
