@@ -1,150 +1,92 @@
-# 🧩 Workflow example — `task: vm.create`
+# Workflow example — `vm.create`
 
-This document describes the full end-to-end workflow for the `vm.create` task in **OpenHVX**, from user request to resource persistence.
+End-to-end flow for creating a VM with protocol v2, from client request to durable
+host result.
 
----
+## 1. Client → API Gateway
 
-## 1. User → API Gateway
+A tenant or admin submits a task. Every mutating task requires a stable
+`Idempotency-Key`:
 
-A user (tenant or admin) sends a request to create a new virtual machine:
-
-```bash
-POST /api/v1/{scope:admin|tenant}/tasks
+```text
+POST /api/v1/tenant/tasks
+Host: api.openhvx.local
+Authorization: Bearer <tenant-token>
+Idempotency-Key: <stable-command-key>
 Content-Type: application/json
-Authorization: Bearer <JWT>
 
 {
-  "tenantId": "test1",
   "action": "vm.create",
+  "target": {
+    "kind": "vm",
+    "agentId": "HOST-OPENHVX-HYPERV-001"
+  },
   "data": {
     "name": "example",
     "cpu": 2,
     "ram": "2GB",
-    "imageId": "Rocky-10-GenericCloud-Base.latest",
-    "cloudInit": { ... }
+    "imageId": "Rocky-10-GenericCloud-Base",
+    "cloudInit": {}
   }
 }
 ```
 
+Admin submissions use `/api/v1/admin/tasks` and include `tenantId`.
+
 ### Gateway actions
 
-1. **Validate JWT** using the appropriate audience (`tenant` or `admin`) via the **Auth Service**, depending on the host (`api.` or `api-admin.`).
-2. **Check roles and scopes** according to the request domain.
-3. Run **anti-spoofing and policy checks** (e.g., tenant ID consistency).
-4. **Proxy the request** to the **Controller** service at `controller:[PORT]/api/admin/tasks`.
+1. Validate the JWT (tenant or admin audience) via Auth.
+2. Enforce roles, scopes, and anti-spoofing policy.
+3. Sign a short-lived controller identity bound to actor, tenant, mode, method, path, and body.
+4. Proxy to the controller.
 
----
+The [`hvx` CLI](/cli) generates and retains the idempotency key automatically.
 
-## 2. API Gateway → Controller
+## 2. Controller admission
 
-### Middleware & context setup
+In one MongoDB transaction the controller:
 
-- **accessMode middleware**: sets `req.isAdmin = true|false`.
-- **Envelope validation**: ensures presence of `kind`, `refId`, and `target`.
-- **Schema pre-validation**: uses `src/lib/schemas/task.js` (per action, e.g. `vm.create`).
-- **Tenant context resolution**:
-  - For admin requests → tenantId is taken from the request body.
-  - For tenant users → tenantId is extracted from JWT claims.
-- **Ownership validation**: confirms user’s access to `refId`; skipped for global admins.
+1. Acquires request identity from the idempotency key (same key + content → same operation; conflict → 409).
+2. Validates the action schema and quota/ownership preconditions (`vm.create` requires RAM; invalid requests fail before durable acceptance).
+3. Persists the task, response envelope, holds/locks, and outbox event.
+4. Returns **HTTP 202** with `taskId` and `statusUrl`.
 
----
+HTTP 202 means durable acceptance, not Hyper-V success. Clients poll
+`GET /api/v1/{tenant|admin}/tasks/{taskId}`.
 
-## 3. Agent Selection & Ownership
+## 3. Outbox → RabbitMQ → Agent
 
-The **Controller** performs **agent election** based on:
+The controller outbox publishes the immutable protocol v2 command to the host queue
+`agent.<agentId>.tasks` with confirms and mandatory routing. Retries retain the same
+operation and event identity.
 
-- Agent heartbeat freshness.
-- Available resources (CPU, RAM, storage).
-- Advertised capabilities (`vm.create`, `network.*`, etc.).
+The agent:
 
-If the selected agent already satisfies capability and availability requirements, additional checks are skipped.
+1. Validates `contractVersion: 2`, fingerprint, and destination.
+2. Commits journal intent before invoking PowerShell.
+3. Runs the `vm.create` adapter (image path from inventory, cloud-init helper as needed).
+4. Persists a stable result/event, publishes it, then acknowledges the command.
 
----
+## 4. Result → Controller
 
-## 4. Payload Enrichment
+The controller applies the result in a transaction: inbox, task transition,
+quota/allocation, associations, and lock release. States:
 
-**Controller** enriches and normalizes the incoming payload through `src/lib/enrich.js (vm.create)`:
+| Outcome | Task state |
+| --- | --- |
+| Applied | `done` |
+| Definitive rejection | `error` |
+| Unknown / unproved | `reconciling` (holds retained) |
 
-- Sets default values for RAM, CPU, and storage.
-- Ensures proper image ID and generation type.
-- Adds default `cloud-init` configuration when missing.
+Partial creation without a conclusive observation stays `reconciling`. The effectful
+handler is not rerun merely to obtain a result.
 
----
+## 5. Follow-up
 
-## 5. Quota Reservation
+- Inventory/telemetry updates refresh resources and the image catalog in MongoDB.
+- Console access is a separate ticketed task through the WebSocket broker.
+- Use the same idempotency key (or `hvx retry`) for uncertain HTTP delivery; use a
+  new key only for a new user intention.
 
-1. Compute **resource deltas** (vCPU, RAM, storage).
-2. Perform a **quota hold** with TTL to reserve capacity temporarily.
-3. If limits are exceeded → respond with `ERR_QUOTA_EXCEEDED`.
-4. If successful → continue with persistence and dispatch.
-
----
-
-## 6. Task Persistence & Dispatch
-
-- Persist the new Task document in MongoDB with `status: "sent"`.
-- Publish the message to RabbitMQ:
-
-  ```
-  Exchange: jobs
-  Routing key: agent.<agentId>
-  Queue: agent.<agentId>.tasks (durable)
-  ```
-
-- Return initial response to the client (`202 Accepted`) with task ID and status.
-
----
-
-## 7. Agent Execution
-
-- The **Agent** consumes messages from its queue `agent.<agentId>.tasks`.
-- Executes the PowerShell script `vm.create.ps1` on the Hyper-V host.
-- Upon completion, publishes a result message to the **results** exchange:
-
-  ```
-  Exchange: results
-  Routing key: task.<taskId>
-  ```
-
-  Payload includes the results.
-
----
-
-## 8. Result Handling
-
-The **Controller** consumes results from the `results` exchange:
-
-- Updates the Task document with final status (`SUCCESS` or `FAILED`).
-- Stores logs and execution metadata.
-
-Depending on the result:
-
-- **Success** → consume the quota hold (commit resources).
-- **Failure** → release the quota hold (rollback).
-
----
-
-## 9. Resource Linking
-
-- Link the newly created VM to the corresponding **TenantResource** entry.
-
----
-
-## ✅ Summary (High-Level Flow)
-
-| Step | Service         | Description                             |
-| ---- | --------------- | --------------------------------------- |
-| 1    | API Gateway     | Auth, scopes, anti-spoofing, proxy      |
-| 2    | Controller      | Envelope & schema validation            |
-| 3    | Controller      | Agent election & ownership checks       |
-| 4    | Controller      | Payload enrichment & normalization      |
-| 5    | Controller      | Quota hold reservation                  |
-| 6    | Controller + MQ | Persist and publish task to agent queue |
-| 7    | Agent           | Execute PowerShell script on Hyper-V    |
-| 8    | Controller      | Process result and adjust quota         |
-| 9    | Controller      | Link resources                          |
-
----
-
-> **Note:**  
-> The same workflow structure applies to other task types (e.g., `vm.delete`, `vm.edit`), with different schemas, enrichers, and capability filters per action.
+See [task protocol](/task-protocol) for consistency boundaries and
+[architecture](/architecture) for service and console details.

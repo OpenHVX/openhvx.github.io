@@ -1,13 +1,15 @@
 # Getting Started (Developer Preview)
 
-> ⚠️ **Active Development:** OpenHVX is not production-ready. This guide targets **contributors and early testers**.
+> **Active Development:** OpenHVX is not production-ready. This guide targets **contributors and early testers**.
 
 ## Prerequisites
 
 - Windows host with **Hyper-V** (for Agent tests)
-- **Docker/Podman & Docker Compose**
-- **Node.js 20+** and **npm**
-- **Go 1.21+** (to build Agent tools)
+- **Docker or Podman** with a Compose provider
+- **Node.js 22** and **npm**
+- **Go** (version declared in each Go module’s `go.mod`) for the agent and CLI
+
+Lab and production deployment automation belong to the separate `deployment` repository. Compose is the optional local stack only.
 
 ## Quick Start (Backend)
 
@@ -17,14 +19,31 @@ git clone https://github.com/openhvx/openhvx-backend.git
 cd openhvx-backend
 
 # 2) Environment
-# Create and fill env files:
-#   .env.auth, .env.controller, .env.gateway, .env.ws
+# Create local profiles from the versioned examples:
+#   .env.auth, .env.gateway, .env.controller, .env.ws
+# Plus root .env for Compose interpolation inputs.
+# See Configuration for shared secrets.
 
-# 3) Run services
-docker compose up -d
+# 3) Traefik TLS material
+# Provide .traefik/certs/app.pem and app-key.pem covering:
+#   api.openhvx.local, admin-api.openhvx.local,
+#   console.openhvx.local, ws.openhvx.local
+# Resolve those names from the browser and agents (hosts/DNS).
+
+# 4) Run services
+docker compose -f compose.yaml up --build -d
+
+# Podman: same base stack + socket override
+podman compose -f compose.yaml -f compose.podman.yaml up --build -d
 ```
 
-> **All variables and examples are documented in** [Environment variables](https://openhvx.org/docs/environment-variables.html).
+Validate rendered config before starting:
+
+```bash
+docker compose -f compose.yaml config --quiet
+```
+
+Shared secrets and service contracts are documented in [Configuration](/configuration). Detailed per-service variables live in the backend `.env.<service>.example` files on GitHub — do not treat those examples as a runnable production environment.
 
 ## Create a Global Admin (one-time bootstrap)
 
@@ -32,17 +51,23 @@ This initializes the **platform-wide administrator** via the Admin Auth API.
 
 > **Notes**
 >
-> - Requires `REGISTER_ENABLED=true` and a valid `REGISTER_API_KEY` on the **Auth** side.
-> - The `mode` parameter defines the registration behavior:
+> - Requires `REGISTER_ENABLED=true` and a valid `REGISTER_API_KEY` on Auth.
+> - The `mode` query parameter defines registration behavior:
 >   - `once`: create only if missing (409 if already exists)
 >   - `reset`: reset password only if user exists
 >   - `upsert`: create if missing, or reset if exists (**recommended for bootstrap**)
-> - Replace `x-api-key` and credentials as needed.
+> - Passwords must be at least 12 characters.
 
 ### Curl
 
 ```bash
-curl -k -X POST "https://admin-api.openhvx.local/api/v1/admin/auth/register?mode=upsert"   -H "content-type: application/json"   -H "x-api-key: example"   --data-binary '{"email":"admin@openhvx.local","password":"3x4mpl3"}'
+export ADMIN_REGISTER_KEY='your-register-key'
+
+curl -k -X POST \
+  "https://admin-api.openhvx.local/api/v1/admin/auth/register?mode=upsert" \
+  -H "content-type: application/json" \
+  -H "x-api-key: $ADMIN_REGISTER_KEY" \
+  --data-binary '{"email":"admin@openhvx.local","password":"change-me-now-12"}'
 ```
 
 **Expected response (example):**
@@ -58,133 +83,39 @@ curl -k -X POST "https://admin-api.openhvx.local/api/v1/admin/auth/register?mode
 }
 ```
 
-> **Security**
->
-> - Avoid exposing the API key in your shell history: export it to a variable (`export ADMIN_REGISTER_KEY=...`) and use `-H "x-api-key: $ADMIN_REGISTER_KEY"`.
-> - Change the password and registration key in real environments.
+## Image catalog
 
-## Set up the Image Repository (with **openhvx-img**)
+The controller reads the image catalog from **storage inventory in MongoDB**. It does **not** mount a local `/share` index or consume `IMAGES_INDEX_PATH`.
 
-OpenHVX expects a JSON index describing available base images (cloud-init compatible `.vhdx` files).  
-The easiest way to generate this index is via the **[OpenHVX/openhvx-img](https://github.com/OpenHVX/openhvx-img)** tool.
+Agents (and storage connectors) publish inventory that includes available base images. Ensure Hyper-V hosts can reach the image storage paths they advertise, then confirm images through the tenant/admin image API or the CLI (`hvx get images`).
 
-### 1) Place your images on a shared path
+## Build and run the Agent
 
-Store your `.vhdx` base images in a shared folder accessible by all Hyper‑V Agents — typically an SMB share.
-
-Example layout on the share:
-
-```
-\\fileserver\EXAMPLE\
-├─ public/
-│  ├─ Rocky-10-GenericCloud-Base.vhdx
-│  ├─ Ubuntu-22.04-LTS.vhdx
-│  └─ ...
-└─ _index/
-```
-
-### 2) Generate the image index
-
-Run the `openhvx-img` tool with the `-root` and `-output` options to automatically scan your repository and produce the index file.
-
-```bash
-openhvx-img -root \\fileserver\EXAMPLE\ -output \\fileserver\EXAMPLE\_index\images.json
-```
-
-This creates a JSON structure like:
-
-```json
-{
-  "schema": "openhvx.images/v1",
-  "generatedAt": "2025-09-07T09:20:02Z",
-  "images": [
-    {
-      "id": "Rocky-10-GenericCloud-Base",
-      "scope": "public",
-      "tenantId": null,
-      "name": "Rocky-10-GenericCloud-Base",
-      "path": "\\192.168.1.37\\openhvx\\public\\Rocky-10-GenericCloud-Base.vhdx",
-      "os": "linux",
-      "arch": "x86_64",
-      "gen": 2,
-      "sizeBytes": 1501560832,
-      "mtime": "2025-09-07T09:17:04Z"
-    }
-  ]
-}
-```
-
-> 💡 The `path` values must correspond to actual network locations accessible by the Agents.
-
-### 3) Mount the index in the Controller
-
-Bind the `_index` directory in the Controller container and set the `IMAGES_INDEX_PATH` environment variable.
-
-**docker-compose.override.yml (example):**
-
-```yaml
-services:
-  controller:
-    volumes:
-      - /mnt/openhvx/_index:/share/_index:ro
-    environment:
-      - IMAGES_INDEX_PATH=/share/_index/images.json
-```
-
-### 4) Verify access from the Agent
-
-Make sure that each Hyper‑V host running an Agent can access the `public/` folder (where the images are stored).
-
-Example test (Windows PowerShell):
+Clone [openhvx-agent](https://github.com/openhvx/openhvx-agent). On a Windows Hyper-V host, build the agent and helpers (from the repository root in PowerShell):
 
 ```powershell
-Test-Path "\\fileserver\EXAMPLE\public\Rocky-10-GenericCloud-Base.vhdx"
+New-Item -ItemType Directory -Force src/powershell/bin | Out-Null
+Push-Location tools/cloudinit-iso/src
+go build -o ../../../src/powershell/bin/openhvx-cidata-iso.exe .
+Pop-Location
+Push-Location tools/serial-bridge/src
+go build -o ../../../src/powershell/bin/openhvx-serial-bridge.exe .
+Pop-Location
+Push-Location src
+go build -o openhvx-agent.exe .
+Pop-Location
 ```
 
-## Build Agent Tools (Windows helpers)
-
-These binaries are required by the PowerShell Agent to create **cloud-init ISOs** and to bridge **serial consoles**.
-
-**Layout:**
-
-```
-/tools/
-  cloudinit-iso/
-    src/     # Go project
-  serial-bridge/
-    src/     # Go project
-/src/powershell/bin/   # ← final target for the built .exe files
-```
-
-Use the provided **Makefile**:
-
-```bash
-# From repo root
-make agent-bin
-```
-
-This will:
-
-1. Build Go projects in `/tools/cloudinit-iso/src` and `/tools/serial-bridge/src`
-2. Place the resulting binaries into `/src/powershell/bin`
-
-> If you build manually, ensure you build `src/` first, then the tools, then move outputs to `/src/powershell/bin`.
-
-## Running the Agent (on a Hyper-V host)
-
-1. Copy the folder `src/powershell/` and its `bin/` subfolder (containing the built `.exe`) to the Windows host.
-2. Open an elevated PowerShell.
-3. Create and configure the **config.json** file with your environment.
-
-### Example `config.json`
+Create a private `config.json` (kept out of Git):
 
 ```json
 {
-  "agentId": "HOST-HVX-TEST-001",
-  "rabbitmqUrl": "amqp://guest:guest@10.0.0.15:5672/",
+  "agentId": "HOST-OPENHVX-HYPERV-001",
+  "rabbitmqUrl": "amqps://agent-user:REPLACE_ME@rabbitmq.example.test:5671/",
   "heartbeatIntervalSec": 30,
-  "inventoryIntervalSec": 90,
-  "basePath": "D:\\VM-REPO",
+  "inventoryIntervalSec": 60,
+  "basePath": "D:\\DATA",
+  "journalPath": "D:\\DATA\\agent-state\\operations.db",
   "capabilities": [
     "inventory",
     "vm.power",
@@ -196,9 +127,38 @@ This will:
 }
 ```
 
-### Start the Agent
+The agent advertises `task.protocol.v2` after opening its journal. Keep `journalPath` on durable local storage bound to one host identity. See [Agents](/agents) for details.
 
 ```powershell
-# Example (adapt to your parameters)
-# .\openhvx-agent.exe
+.\openhvx-agent.exe -config .\config.json
 ```
+
+External agents need explicitly configured, restricted broker connectivity. The local Compose stack does not publish MongoDB/AMQP to the host by default.
+
+## CLI (`hvx`)
+
+Clone [openhvx-cli](https://github.com/openhvx/openhvx-cli). From `src`:
+
+```bash
+go build -o ../bin/hvx ./cmd/hvx
+```
+
+Initialize a context, then explore inventory and tasks:
+
+```bash
+bin/hvx init --mode tenant \
+  --tenant-server https://api.openhvx.local \
+  --username user@openhvx.local --password-stdin
+
+bin/hvx get vms
+bin/hvx start vm web01 --wait
+```
+
+See [CLI](/cli) for command mapping and idempotent retries.
+
+## Next steps
+
+- [Workflow example](/workflow-example) — end-to-end `vm.create`
+- [Architecture](/architecture) — service boundaries and console routing
+- [Task protocol](/task-protocol) — idempotency and recovery
+- [API](/api) — public routes

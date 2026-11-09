@@ -10,7 +10,7 @@ export default defineConfig({
   base: "/docs/",
   outDir: "../dist/docs",
   themeConfig: {
-    logo: "/assets/logo.svg",
+    logo: "/assets/logo.png",
     siteTitle: "OpenHVX",
     outline: [2, 3],
     lastUpdated: true,
@@ -18,6 +18,7 @@ export default defineConfig({
 
     nav: [
       { text: "Home", link: "/" },
+      { text: "Quick Start", link: "/getting-started" },
       { text: "API", link: "/api" },
       { text: "Agents", link: "/agents" },
       { text: "GitHub", link: "https://github.com/openhvx" },
@@ -30,23 +31,25 @@ export default defineConfig({
           { text: "Overview", link: "/" },
           { text: "Quick Start", link: "/getting-started" },
           { text: "Workflow Example", link: "/workflow-example" },
-          { text: "Environment variables", link: "/environment-variables" },
+          { text: "Configuration", link: "/configuration" },
+        ],
+      },
+      {
+        text: "Architecture",
+        items: [
+          { text: "Control plane", link: "/architecture" },
+          { text: "Task protocol", link: "/task-protocol" },
+          { text: "Agents", link: "/agents" },
+          { text: "CLI", link: "/cli" },
         ],
       },
       {
         text: "API Reference",
-        items: [
-          { text: "Endpoints", link: "/api" },
-          { text: "Schemas", link: "/schemas" },
-          { text: "Errors", link: "/errors" },
-        ],
+        items: [{ text: "Endpoints", link: "/api" }],
       },
       {
         text: "Contributing",
-        items: [
-          { text: "How to Contribute", link: "/contributing" },
-          { text: "Code Style", link: "/code-style" },
-        ],
+        items: [{ text: "How to Contribute", link: "/contributing" }],
       },
     ],
 
@@ -63,7 +66,7 @@ export default defineConfig({
 
   head: [
     ["meta", { name: "theme-color", content: "#10B981" }],
-    ["link", { rel: "icon", href: "/assets/logo.svg", type: "image/svg+xml" }],
+    ["link", { rel: "icon", href: "/assets/logo.png", type: "image/png" }],
     ["meta", { property: "og:title", content: "OpenHVX Docs" }],
     [
       "meta",
@@ -73,13 +76,11 @@ export default defineConfig({
           "Open-source IaaS for Hyper-V — multi-tenant, API-first, agent-based automation.",
       },
     ],
-    ["meta", { property: "og:image", content: "/assets/og-cover.png" }],
+    ["meta", { property: "og:image", content: "/assets/logo.png" }],
   ],
   markdown: {
     config: (md) => {
-      // Activer le plugin lightbox
       md.use(lightbox, {
-        // Optionnel : config
         selector: "img[data-zoomable]",
         delay: 300,
         scrollOffset: 50,
