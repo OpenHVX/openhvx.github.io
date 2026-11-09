@@ -41,6 +41,7 @@ export default defineConfig({
           { text: "Task flow", link: "/task-flow" },
           { text: "Agents", link: "/agents" },
           { text: "CLI", link: "/cli" },
+          { text: "Roadmap", link: "/roadmap" },
         ],
       },
       {

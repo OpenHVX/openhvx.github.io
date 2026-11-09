@@ -54,6 +54,11 @@ This architecture provides near real-time console streaming independent of the h
 
 <img src="/assets/serial-console.png" alt="OpenHVX Serial Console" width="900" data-zoomable />
 
+## Roadmap
+
+Next platform bricks: tenant networking, then VM host failover. See the
+[Roadmap](/roadmap).
+
 ## Contributing
 
 We welcome contributions from the community - documentation improvements, feature suggestions, and bug reports all help. See [How to Contribute](/contributing) or visit the [GitHub organization](https://github.com/openhvx).
