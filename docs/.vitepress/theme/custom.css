@@ -27,6 +27,7 @@ html.dark .only-dark  { display: block; }
 
 /* Mermaid diagrams */
 .mermaid {
+  position: relative;
   margin: 1.5rem 0;
   padding: 1rem;
   overflow-x: auto;
@@ -35,7 +36,94 @@ html.dark .only-dark  { display: block; }
   text-align: center;
 }
 
+.mermaid--zoomable {
+  cursor: zoom-in;
+}
+
 .mermaid svg {
-  max-width: 100%;
+  max-width: none;
   height: auto;
+}
+
+.mermaid__expand {
+  position: absolute;
+  top: 0.65rem;
+  right: 0.65rem;
+  z-index: 1;
+  padding: 0.25rem 0.65rem;
+  border: 1px solid var(--vp-c-divider, #cbd5e1);
+  border-radius: 6px;
+  background: var(--vp-c-bg);
+  color: var(--vp-c-text-1);
+  font-size: 0.75rem;
+  line-height: 1.4;
+  cursor: pointer;
+}
+
+.mermaid__expand:hover {
+  border-color: var(--vp-c-brand);
+  color: var(--vp-c-brand-dark);
+}
+
+.mermaid-lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  flex-direction: column;
+  background: rgba(15, 23, 42, 0.72);
+  backdrop-filter: blur(2px);
+}
+
+.mermaid-lightbox[hidden] {
+  display: none !important;
+}
+
+.mermaid-lightbox__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  background: var(--vp-c-bg);
+  border-bottom: 1px solid var(--vp-c-divider, #cbd5e1);
+}
+
+.mermaid-lightbox__hint {
+  color: var(--vp-c-text-2);
+  font-size: 0.85rem;
+}
+
+.mermaid-lightbox__close {
+  padding: 0.35rem 0.8rem;
+  border: 1px solid var(--vp-c-divider, #cbd5e1);
+  border-radius: 6px;
+  background: var(--vp-c-bg-alt);
+  color: var(--vp-c-text-1);
+  cursor: pointer;
+}
+
+.mermaid-lightbox__close:hover {
+  border-color: var(--vp-c-brand);
+}
+
+.mermaid-lightbox__stage {
+  flex: 1;
+  overflow: auto;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.mermaid-lightbox__stage svg {
+  display: inline-block;
+  max-width: none !important;
+  width: auto !important;
+  height: auto !important;
+  background: var(--vp-c-bg);
+  border-radius: 8px;
+  padding: 1rem;
+}
+
+body.mermaid-lightbox-open {
+  overflow: hidden;
 }
