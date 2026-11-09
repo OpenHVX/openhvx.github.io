@@ -24,3 +24,18 @@
 /* When VitePress is in dark mode */
 html.dark .only-light { display: none; }
 html.dark .only-dark  { display: block; }
+
+/* Mermaid diagrams */
+.mermaid {
+  margin: 1.5rem 0;
+  padding: 1rem;
+  overflow-x: auto;
+  background: var(--vp-c-bg-alt);
+  border-radius: 8px;
+  text-align: center;
+}
+
+.mermaid svg {
+  max-width: 100%;
+  height: auto;
+}

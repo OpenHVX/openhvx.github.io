@@ -29,7 +29,7 @@ K3s is the intended deployment target. Compose remains an optional local develop
 - **VM Lifecycle:** Create, edit, delete, and power-manage VMs with cloud-init and serial console access.
 - **Quotas:** Per-tenant CPU, RAM, storage, and VM limits with atomic reservation (hold → execute → release).
 - **Multi-Tenancy:** Logical separation of compute and storage resources per tenant.
-- **Image catalog:** Base images come from agent/storage inventory in MongoDB — not a local controller file share index.
+- **Image catalog:** Base images come from agent/storage inventory in MongoDB - not a local controller file share index.
 - **Authentication:** Admin and tenant login flows with JWT tokens, distinct audiences, and personal access tokens.
 - **Agents:** Host-based agents with durable journaling and `task.protocol.v2`.
 - **CLI:** `hvx` for contexts, inventory, and idempotent task submission.
@@ -56,4 +56,4 @@ This architecture provides near real-time console streaming independent of the h
 
 ## Contributing
 
-We welcome contributions from the community — documentation improvements, feature suggestions, and bug reports all help. See [How to Contribute](/contributing) or visit the [GitHub organization](https://github.com/openhvx).
+We welcome contributions from the community - documentation improvements, feature suggestions, and bug reports all help. See [How to Contribute](/contributing) or visit the [GitHub organization](https://github.com/openhvx).

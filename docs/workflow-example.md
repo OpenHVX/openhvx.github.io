@@ -1,4 +1,4 @@
-# Workflow example — `vm.create`
+# Workflow example - `vm.create`
 
 End-to-end flow for creating a VM with protocol v2, from client request to durable
 host result.

@@ -43,7 +43,7 @@ Validate rendered config before starting:
 docker compose -f compose.yaml config --quiet
 ```
 
-Shared secrets and service contracts are documented in [Configuration](/configuration). Detailed per-service variables live in the backend `.env.<service>.example` files on GitHub — do not treat those examples as a runnable production environment.
+Shared secrets and service contracts are documented in [Configuration](/configuration). Detailed per-service variables live in the backend `.env.<service>.example` files on GitHub - do not treat those examples as a runnable production environment.
 
 ## Create a Global Admin (one-time bootstrap)
 
@@ -158,7 +158,7 @@ See [CLI](/cli) for command mapping and idempotent retries.
 
 ## Next steps
 
-- [Workflow example](/workflow-example) — end-to-end `vm.create`
-- [Architecture](/architecture) — service boundaries and console routing
-- [Task protocol](/task-protocol) — idempotency and recovery
-- [API](/api) — public routes
+- [Workflow example](/workflow-example) - end-to-end `vm.create`
+- [Architecture](/architecture) - service boundaries and console routing
+- [Task protocol](/task-protocol) - idempotency and recovery
+- [API](/api) - public routes

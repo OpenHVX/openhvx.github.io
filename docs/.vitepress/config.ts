@@ -5,7 +5,7 @@ export default defineConfig({
   lang: "en-US",
   title: "OpenHVX Docs",
   description:
-    "Open-source IaaS for Hyper-V — multi-tenant, API-first, agent-based automation.",
+    "Open-source IaaS for Hyper-V - multi-tenant, API-first, agent-based automation.",
 
   base: "/docs/",
   outDir: "../dist/docs",
@@ -73,7 +73,7 @@ export default defineConfig({
       {
         property: "og:description",
         content:
-          "Open-source IaaS for Hyper-V — multi-tenant, API-first, agent-based automation.",
+          "Open-source IaaS for Hyper-V - multi-tenant, API-first, agent-based automation.",
       },
     ],
     ["meta", { property: "og:image", content: "/assets/logo.png" }],

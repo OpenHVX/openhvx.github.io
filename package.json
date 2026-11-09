@@ -13,6 +13,7 @@
     "serve": "vitepress serve docs"
   },
   "devDependencies": {
+    "mermaid": "^10.9.8",
     "vitepress": "1.0.0-alpha.28",
     "vitepress-plugin-lightbox": "^1.0.3",
     "vue": "3.2.44"
